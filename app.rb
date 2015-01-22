@@ -17,7 +17,6 @@ before do
   @points_number = ENV['POINTS_NUMBER']
   @mms_number = ENV['INVISIBLE_NUMBER']
   @client = Twilio::REST::Client.new ENV['TWILIO_ACCOUNT_SID'], ENV['TWILIO_AUTH_TOKEN']
-  puts "num: #{@twilio_number}"
 end
 
 def sendMessage(from, to, body, media)
@@ -40,33 +39,6 @@ end
 
 get "/" do
   haml :index
-end
-
-get "/signup" do
-  haml :signup
-end
-
-get '/gotime' do
-  haml :gotime
-end
-
-get '/notify' do
-  p '//////////////////// --------------------'
-  p ENV['TWILIO_SID']
-  p @client.accounts.get(ENV['TWILIO_SID'])
-  @mmsclient.messages.create(
-    :from => 'TWILIO',
-    :to => '2066505813',
-    :body => "Hi Jarod",
-  )
-end
-
-get '/twilions' do
-  haml :twilions
-end
-
-get '/success' do
-  haml :success
 end
 
 # http://baby-notifier.herokuapp.com/branded-sms
