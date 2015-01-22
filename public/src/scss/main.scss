@@ -3,13 +3,38 @@
 // Restyle and baseline non-control form elements.
 
 body {
-  font-family: 'Josefin Sans', sans-serif;
-  font-size:22px;
+  font-family: 'Open Sans', sans-serif;
+  font-size:15px;
   line-height:24px;
-  background-image:url('/img/bg.gif');
   position: absolute;
-  min-height: 100%;
+  height: 100%;
   width: 100%;
+}
+
+h4 {
+  font-weight: 300;
+  font-size:14px;
+  text-align: center;
+  padding:12px;
+  color:#e2e2e2;
+}
+
+form.signup {
+  padding:20px;
+}
+
+img.points {
+  border-radius: 14px;
+  margin: 20px 0px;
+}
+
+#wrapper.points {
+  background-image:url('/img/city.jpg');
+  font-size:15px;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-size:cover;
 }
 
 .logo {

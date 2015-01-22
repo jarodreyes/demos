@@ -15,16 +15,9 @@ set :root, File.dirname(__FILE__)
 before do
   @twilio_number = ENV['TWILIO_NUMBER']
   @points_number = ENV['POINTS_NUMBER']
+  @mms_number = ENV['INVISIBLE_NUMBER']
   @client = Twilio::REST::Client.new ENV['TWILIO_ACCOUNT_SID'], ENV['TWILIO_AUTH_TOKEN']
   puts "num: #{@twilio_number}"
-  @mmsclient = @client.accounts.get(ENV['TWILIO_SID'])
-  
-  if params[:error].nil?
-    @error = false
-  else
-    @error = true
-  end
-
 end
 
 def sendMessage(from, to, body, media)
@@ -43,21 +36,6 @@ def sendMessage(from, to, body, media)
     )
   end
   puts message.to
-end
-
-def createUser(name, phone_number, send_mms, verified)
-  user = VerifiedUser.create(
-    :name => name,
-    :phone_number => phone_number,
-    :send_mms => send_mms,
-  )
-  if verified == true
-    user.verified = true
-    user.save
-  end
-  Twilio::TwiML::Response.new do |r|
-    r.Message "Awesome, #{name} at #{phone_number} you have been added to the Reyes family babynotify.me account."
-  end.text
 end
 
 get "/" do
@@ -89,16 +67,6 @@ end
 
 get '/success' do
   haml :success
-end
-
-get '/kindthings' do
-  @messages = Message.all
-  haml :messages
-end
-
-get '/users/' do
-  @users = VerifiedUser.all
-  haml :users
 end
 
 # http://baby-notifier.herokuapp.com/branded-sms
@@ -137,6 +105,53 @@ route :get, :post, '/branded-sms' do
     )
     puts message.to
   end
+  halt 200
+end
+
+route :get, :post, '/points' do
+  puts 'points/'
+  if params[:phone_number].nil?
+    @phone_number = Sanitize.clean(params[:From])
+  else
+    @phone_number = Sanitize.clean(params[:phone_number])
+  end
+  @msg = "Travel Deal Alert: JFK-LAX: $32 One-way. 2475 Miles on JetBlue. You're welcome. -TPG"
+  @media = "https://s3-us-west-1.amazonaws.com/jardiohead/branded-tpglg.png"
+  message = @client.account.messages.create(
+    :from => @points_number,
+    :to => @phone_number,
+    :media_url => @media,
+  )
+  puts message.to
+  sleep(20)
+  message2 = @client.account.messages.create(
+    :from => @points_number,
+    :to => @phone_number,
+    :body => @msg,
+  )
+  puts message2.to
+  halt 200
+end
+
+
+
+# Generic webhook to send sms from 'TWILIO'
+get '/mms-demo' do
+  @body = params[:Body].downcase
+  if @body.include? "croll"
+    @media = "https://s3-us-west-1.amazonaws.com/jardiohead/scrolling.gif"
+  elsif @body.include? "brand"
+    @media = "https://s3-us-west-1.amazonaws.com/jardiohead/branded-tpglg.png"
+  else
+    @media = "https://s3-us-west-1.amazonaws.com/jardiohead/invisiblesms.gif"
+  end
+  @phone_number = Sanitize.clean(params[:From])
+  message = @client.account.messages.create(
+    :from => @mms_number,
+    :to => @phone_number,
+    :media_url => @media,
+  )
+  puts message.to
   halt 200
 end
 

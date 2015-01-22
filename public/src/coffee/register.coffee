@@ -1,12 +1,12 @@
 $(document).ready ->
   addVerify = =>
-    $('.verifyCode').fadeIn(300)
+    $('.small.button').text 'Success!'
 
   $('#signup').submit (e) ->
     e.preventDefault()
     $.ajax
       type: "POST",
-      url: '/register',
+      url: '/points',
       data: $('#signup').serialize(),
       success: addVerify(),
     return false
