@@ -23,7 +23,9 @@ get "/" do
   haml :index
 end
 
-# http://baby-notifier.herokuapp.com/branded-sms
+
+
+# http://mmsdemo.herokuapp.com/branded-sms
 # Branded SMS Webhook, first asks for device, then sends MMS
 route :get, :post, '/branded-sms' do
   @client = Twilio::REST::Client.new ENV['TWILIO_ACCOUNT_SID'], ENV['TWILIO_AUTH_TOKEN']
@@ -86,8 +88,6 @@ route :get, :post, '/points' do
   puts message2.to
   halt 200
 end
-
-
 
 # Generic webhook to send sms from 'TWILIO'
 get '/mms-demo' do
