@@ -7,6 +7,8 @@ require "sanitize"
 require "erb"
 require "rotp"
 require "haml"
+require "net/http"
+require "uri"
 include ERB::Util
 
 set :static, true
@@ -16,14 +18,12 @@ before do
   @twilio_number = ENV['TWILIO_NUMBER']
   @points_number = ENV['POINTS_NUMBER']
   @mms_number = ENV['INVISIBLE_NUMBER']
-  @client = Twilio::REST::Client.new ENV['TWILIO_ACCOUNT_SID'], ENV['TWILIO_AUTH_TOKEN']
+  @client = Twilio::REST::Client.new ENV['TWILIO_ACCOUNT_SID'], ENV['TWILIO_AUTH_TOKEN'], :host => 'api-twilio-com-cgxfsyzjzffz.runscope.net'
 end
 
 get "/" do
   haml :index
 end
-
-
 
 # http://mmsdemo.herokuapp.com/branded-sms
 # Branded SMS Webhook, first asks for device, then sends MMS
@@ -107,4 +107,20 @@ get '/mms-demo' do
   )
   puts message.to
   halt 200
+end
+
+# Generic webhook to send sms from 'TWILIO'
+post '/robot_eyes' do
+  body = params[:Body]
+
+  access_token = ENV['PARTICLE_ACCESS_TOKEN']
+  uri = URI.parse("https://api.particle.io/v1/devices/28001e000547353138383138/text")
+
+  # Shortcut
+  robotReq = Net::HTTP.post_form(uri, {"access_token" => access_token, "args" => body})
+  p robotReq
+  response = Twilio::TwiML::Response.new do |r|
+    r.Sms "🤖 Thank you for texting my robot face! <3 Elliott Bot 3000! 🤖"
+  end
+  response.text
 end

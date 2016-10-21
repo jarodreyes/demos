@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 gem "sinatra"
 gem "sinatra-contrib"
 
-gem "twilio-ruby", "~> 3.11"
+gem "twilio-ruby"
 
 gem "haml"
 
